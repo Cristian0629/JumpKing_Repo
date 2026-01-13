@@ -181,6 +181,7 @@ public class PlayerController : MonoBehaviour
         playerRb.linearVelocity = jumpVelocity;
         isChargingJump = false;
         chargeTimer = 0f;
+        AudioManager.Instance.PlaySFX(3);
     }
 
     void Flip()
