@@ -1,31 +1,25 @@
 fileFormatVersion: 2
-guid: 44c7d2a49442ad747a78b480db7ff67d
+guid: 7e6ff9eaf0dc4174ba4277ea1cbc1779
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5286345932259702937
-    second: walk_animacion_angel_pixelart_0
+      213: -9077340003434266089
+    second: jump_player_0
   - first:
-      213: -1881345023894825247
-    second: walk_animacion_angel_pixelart_1
+      213: -748117572050803117
+    second: jump_player_1
   - first:
-      213: -794147196591298751
-    second: walk_animacion_angel_pixelart_2
+      213: 5510715400793978405
+    second: jump_player_2
   - first:
-      213: -6874717578973763745
-    second: walk_animacion_angel_pixelart_3
+      213: 4022789466990037721
+    second: jump_player_3
   - first:
-      213: -141173085650497672
-    second: walk_animacion_angel_pixelart_4
+      213: -8815555499735919385
+    second: jump_player_4
   - first:
-      213: -1880897781697679675
-    second: walk_animacion_angel_pixelart_5
-  - first:
-      213: -7156817437745998695
-    second: walk_animacion_angel_pixelart_6
-  - first:
-      213: 176024456439459236
-    second: walk_animacion_angel_pixelart_7
+      213: 9038171120810098135
+    second: jump_player_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -143,11 +137,37 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: walk_animacion_angel_pixelart_0
+      name: jump_player_0
       rect:
         serializedVersion: 2
         x: 0
@@ -155,21 +175,21 @@ TextureImporter:
         width: 96
         height: 69
       alignment: 9
-      pivot: {x: 0.503301, y: 0.09398023}
+      pivot: {x: 0.49997047, y: 0.14092119}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 76744d3026023a6b0800000000000000
-      internalID: -5286345932259702937
+      spriteID: 7128bd55c5fc60280800000000000000
+      internalID: -9077340003434266089
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: walk_animacion_angel_pixelart_1
+      name: jump_player_1
       rect:
         serializedVersion: 2
         x: 96
@@ -177,21 +197,21 @@ TextureImporter:
         width: 96
         height: 69
       alignment: 9
-      pivot: {x: 0.49825525, y: 0.091981225}
+      pivot: {x: 0.49889293, y: 0.13942203}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1e6dcc62bae14e5e0800000000000000
-      internalID: -1881345023894825247
+      spriteID: 3562fab28072e95f0800000000000000
+      internalID: -748117572050803117
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: walk_animacion_angel_pixelart_2
+      name: jump_player_2
       rect:
         serializedVersion: 2
         x: 192
@@ -199,21 +219,21 @@ TextureImporter:
         width: 96
         height: 69
       alignment: 9
-      pivot: {x: 0.49825525, y: 0.08973777}
+      pivot: {x: 0.49889293, y: 0.13942203}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 147adcf055f9af4f0800000000000000
-      internalID: -794147196591298751
+      spriteID: 5267992c57ef97c40800000000000000
+      internalID: 5510715400793978405
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: walk_animacion_angel_pixelart_3
+      name: jump_player_3
       rect:
         serializedVersion: 2
         x: 288
@@ -221,21 +241,21 @@ TextureImporter:
         width: 96
         height: 69
       alignment: 9
-      pivot: {x: 0.5014801, y: 0.09422467}
+      pivot: {x: 0.49889278, y: 0.14092119}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f57a22629c81890a0800000000000000
-      internalID: -6874717578973763745
+      spriteID: 9dacf12e4b1d3d730800000000000000
+      internalID: 4022789466990037721
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: walk_animacion_angel_pixelart_4
+      name: jump_player_4
       rect:
         serializedVersion: 2
         x: 384
@@ -243,21 +263,21 @@ TextureImporter:
         width: 96
         height: 69
       alignment: 9
-      pivot: {x: 0.49986744, y: 0.091981225}
+      pivot: {x: 0.49997044, y: 0.14092119}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 87fc4f993d37a0ef0800000000000000
-      internalID: -141173085650497672
+      spriteID: 7e4df74dafad8a580800000000000000
+      internalID: -8815555499735919385
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: walk_animacion_angel_pixelart_5
+      name: jump_player_5
       rect:
         serializedVersion: 2
         x: 480
@@ -265,59 +285,15 @@ TextureImporter:
         width: 96
         height: 69
       alignment: 9
-      pivot: {x: 0.49503008, y: 0.09422467}
+      pivot: {x: 0.4988931, y: 0.13942203}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5cee617de65b5e5e0800000000000000
-      internalID: -1880897781697679675
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: walk_animacion_angel_pixelart_6
-      rect:
-        serializedVersion: 2
-        x: 576
-        y: 0
-        width: 96
-        height: 69
-      alignment: 9
-      pivot: {x: 0.49664244, y: 0.08973777}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 99414d47570edac90800000000000000
-      internalID: -7156817437745998695
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: walk_animacion_angel_pixelart_7
-      rect:
-        serializedVersion: 2
-        x: 672
-        y: 0
-        width: 96
-        height: 69
-      alignment: 9
-      pivot: {x: 0.49664244, y: 0.08973777}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4adeadd7f4d517200800000000000000
-      internalID: 176024456439459236
+      spriteID: 7dd74138fb80e6d70800000000000000
+      internalID: 9038171120810098135
       vertices: []
       indices: 
       edges: []
@@ -326,7 +302,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5573a6887c0956d448e34488a07bf199
+    spriteID: 7e9926190c53a9449b8398b748b60d53
     internalID: 0
     vertices: []
     indices: 
@@ -336,16 +312,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":8.0,"y":1.0},"gridSpriteSize":{"x":96.0,"y":69.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":6,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":6.0,"y":1.0},"gridSpriteSize":{"x":96.0,"y":69.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":6,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      walk_animacion_angel_pixelart_0: -5286345932259702937
-      walk_animacion_angel_pixelart_1: -1881345023894825247
-      walk_animacion_angel_pixelart_2: -794147196591298751
-      walk_animacion_angel_pixelart_3: -6874717578973763745
-      walk_animacion_angel_pixelart_4: -141173085650497672
-      walk_animacion_angel_pixelart_5: -1880897781697679675
-      walk_animacion_angel_pixelart_6: -7156817437745998695
-      walk_animacion_angel_pixelart_7: 176024456439459236
+      jump_player_0: -9077340003434266089
+      jump_player_1: -748117572050803117
+      jump_player_2: 5510715400793978405
+      jump_player_3: 4022789466990037721
+      jump_player_4: -8815555499735919385
+      jump_player_5: 9038171120810098135
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

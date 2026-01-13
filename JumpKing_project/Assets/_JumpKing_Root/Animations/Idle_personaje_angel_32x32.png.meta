@@ -1,25 +1,28 @@
 fileFormatVersion: 2
-guid: 7e6ff9eaf0dc4174ba4277ea1cbc1779
+guid: 6ef159300fa35e447a746923165c9268
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -9077340003434266089
-    second: jump_player_0
+      213: 1723600166038203477
+    second: Idle_personaje_angel_32x32_0
   - first:
-      213: -748117572050803117
-    second: jump_player_1
+      213: -8310942336519699930
+    second: Idle_personaje_angel_32x32_1
   - first:
-      213: 5510715400793978405
-    second: jump_player_2
+      213: 5464765613072078180
+    second: Idle_personaje_angel_32x32_2
   - first:
-      213: 4022789466990037721
-    second: jump_player_3
+      213: 7758663533942032785
+    second: Idle_personaje_angel_32x32_3
   - first:
-      213: -8815555499735919385
-    second: jump_player_4
+      213: -6713678941423760402
+    second: Idle_personaje_angel_32x32_4
   - first:
-      213: 9038171120810098135
-    second: jump_player_5
+      213: -5688902596311870805
+    second: Idle_personaje_angel_32x32_5
+  - first:
+      213: 3311778795355037828
+    second: Idle_personaje_angel_32x32_6
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -137,137 +140,185 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: jump_player_0
+      name: Idle_personaje_angel_32x32_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 96
-        height: 69
+        height: 84
       alignment: 9
-      pivot: {x: 0.49997047, y: 0.14092119}
+      pivot: {x: 0.50091225, y: 0.2678227}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7128bd55c5fc60280800000000000000
-      internalID: -9077340003434266089
+      spriteID: 55ce28f08357be710800000000000000
+      internalID: 1723600166038203477
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: jump_player_1
+      name: Idle_personaje_angel_32x32_1
       rect:
         serializedVersion: 2
         x: 96
         y: 0
         width: 96
-        height: 69
+        height: 84
       alignment: 9
-      pivot: {x: 0.49889293, y: 0.13942203}
+      pivot: {x: 0.5026736, y: 0.26584482}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3562fab28072e95f0800000000000000
-      internalID: -748117572050803117
+      spriteID: 6220dfa6af999ac80800000000000000
+      internalID: -8310942336519699930
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: jump_player_2
+      name: Idle_personaje_angel_32x32_2
       rect:
         serializedVersion: 2
         x: 192
         y: 0
         width: 96
-        height: 69
+        height: 84
       alignment: 9
-      pivot: {x: 0.49889293, y: 0.13942203}
+      pivot: {x: 0.5006005, y: 0.26435113}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5267992c57ef97c40800000000000000
-      internalID: 5510715400793978405
+      spriteID: 4655eeb1f5fb6db40800000000000000
+      internalID: 5464765613072078180
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: jump_player_3
+      name: Idle_personaje_angel_32x32_3
       rect:
         serializedVersion: 2
         x: 288
         y: 0
         width: 96
-        height: 69
+        height: 84
       alignment: 9
-      pivot: {x: 0.49889278, y: 0.14092119}
+      pivot: {x: 0.5017948, y: 0.26520067}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9dacf12e4b1d3d730800000000000000
-      internalID: 4022789466990037721
+      spriteID: 1994460806f4cab60800000000000000
+      internalID: 7758663533942032785
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: jump_player_4
+      name: Idle_personaje_angel_32x32_4
       rect:
         serializedVersion: 2
         x: 384
         y: 0
         width: 96
-        height: 69
+        height: 84
       alignment: 9
-      pivot: {x: 0.49997044, y: 0.14092119}
+      pivot: {x: 0.50135136, y: 0.264235}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7e4df74dafad8a580800000000000000
-      internalID: -8815555499735919385
+      spriteID: eeb8a68c29834d2a0800000000000000
+      internalID: -6713678941423760402
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: jump_player_5
+      name: Idle_personaje_angel_32x32_5
       rect:
         serializedVersion: 2
         x: 480
         y: 0
         width: 96
-        height: 69
+        height: 84
       alignment: 9
-      pivot: {x: 0.4988931, y: 0.13942203}
+      pivot: {x: 0.4995683, y: 0.2662767}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7dd74138fb80e6d70800000000000000
-      internalID: 9038171120810098135
+      spriteID: ba29801da35fc01b0800000000000000
+      internalID: -5688902596311870805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Idle_personaje_angel_32x32_6
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 0
+        width: 96
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5014089, y: 0.25314453}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 480eecf844dc5fd20800000000000000
+      internalID: 3311778795355037828
       vertices: []
       indices: 
       edges: []
@@ -276,7 +327,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 7e9926190c53a9449b8398b748b60d53
+    spriteID: 6b1e402f500ac284e90b64c0afd83d71
     internalID: 0
     vertices: []
     indices: 
@@ -286,14 +337,15 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":6.0,"y":1.0},"gridSpriteSize":{"x":96.0,"y":69.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":6,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":7.0,"y":1.0},"gridSpriteSize":{"x":96.0,"y":84.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":6,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      jump_player_0: -9077340003434266089
-      jump_player_1: -748117572050803117
-      jump_player_2: 5510715400793978405
-      jump_player_3: 4022789466990037721
-      jump_player_4: -8815555499735919385
-      jump_player_5: 9038171120810098135
+      Idle_personaje_angel_32x32_0: 1723600166038203477
+      Idle_personaje_angel_32x32_1: -8310942336519699930
+      Idle_personaje_angel_32x32_2: 5464765613072078180
+      Idle_personaje_angel_32x32_3: 7758663533942032785
+      Idle_personaje_angel_32x32_4: -6713678941423760402
+      Idle_personaje_angel_32x32_5: -5688902596311870805
+      Idle_personaje_angel_32x32_6: 3311778795355037828
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
