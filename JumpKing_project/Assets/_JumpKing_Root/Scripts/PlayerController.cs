@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
@@ -40,6 +40,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float minVerticalSpeedForBounce = 0.2f;
     [SerializeField] float minHorizontalSpeedForBounce = 0.5f;
 
+    // ---- ORBE MANUAL ----
+    OrbManualJump manualOrb;
+
     Rigidbody2D playerRb;
     Animator anim;
     PlayerInput playerInput;
@@ -58,6 +61,14 @@ public class PlayerController : MonoBehaviour
 
     bool wallBounceLocked;
     float wallBounceTimer;
+
+    // ---- mantener dirección del salto si no hay input en el aire ----
+    float airborneLockedX;
+    bool hasAirborneLockedX;
+
+    // ✅ NUEVO: permitir moverte/saltar aunque exista landing cooldown (para plataformas frágiles, etc.)
+    bool ignoreLandingMoveLock;
+    public void SetNoLandingLock(bool v) => ignoreLandingMoveLock = v;
 
     private void Awake()
     {
@@ -94,6 +105,11 @@ public class PlayerController : MonoBehaviour
 
         if (wallLayer.value == 0)
             wallLayer = groundLayer;
+
+        hasAirborneLockedX = false;
+        airborneLockedX = 0f;
+
+        ignoreLandingMoveLock = false;
     }
 
     void Update()
@@ -104,6 +120,8 @@ public class PlayerController : MonoBehaviour
         {
             moveLockedAfterLanding = true;
             landingMoveTimer = landingMoveCooldown;
+
+            hasAirborneLockedX = false;
         }
         wasGrounded = isGrounded;
 
@@ -142,9 +160,24 @@ public class PlayerController : MonoBehaviour
 
     void Movement()
     {
-        if (blockMoveInAir && !isGrounded) return;
+        // --- Aire ---
+        if (!isGrounded)
+        {
+            if (blockMoveInAir) return;
 
-        if (moveLockedAfterLanding && isGrounded)
+            if (hasAirborneLockedX && Mathf.Abs(moveInput.x) < 0.01f)
+            {
+                playerRb.linearVelocity = new Vector2(airborneLockedX, playerRb.linearVelocity.y);
+                return;
+            }
+
+            playerRb.linearVelocity = new Vector2(moveInput.x * speed, playerRb.linearVelocity.y);
+            return;
+        }
+
+        // --- Suelo ---
+        // ✅ MODIFICADO: solo bloquea si NO estamos ignorando el lock (plataforma frágil temblando, etc.)
+        if (moveLockedAfterLanding && isGrounded && !ignoreLandingMoveLock)
         {
             playerRb.linearVelocity = new Vector2(0f, playerRb.linearVelocity.y);
             return;
@@ -165,7 +198,12 @@ public class PlayerController : MonoBehaviour
     {
         float t = Mathf.Clamp01(chargeTimer / maxChargeTime);
         float jumpForce = Mathf.Lerp(minJumpForce, maxJumpForce, t);
+
         float xDir = Mathf.Clamp(moveInput.x, -1f, 1f);
+
+        // Si no hay input horizontal, usa hacia donde mira
+        if (Mathf.Abs(xDir) < 0.01f)
+            xDir = isFacingRight ? 1f : -1f;
 
         Vector2 jumpVelocity = new Vector2(
             xDir * jumpForce * horizontalJumpMultiplier,
@@ -179,6 +217,10 @@ public class PlayerController : MonoBehaviour
         }
 
         playerRb.linearVelocity = jumpVelocity;
+
+        airborneLockedX = jumpVelocity.x;
+        hasAirborneLockedX = true;
+
         isChargingJump = false;
         chargeTimer = 0f;
     }
@@ -203,6 +245,13 @@ public class PlayerController : MonoBehaviour
 
     void OnJumpStarted(InputAction.CallbackContext ctx)
     {
+        // ORBE MANUAL en el aire
+        if (!isGrounded && manualOrb != null)
+        {
+            bool activated = manualOrb.TryActivate(moveInput);
+            if (activated) return;
+        }
+
         if (!isGrounded) return;
         isChargingJump = true;
         chargeTimer = 0f;
@@ -214,7 +263,19 @@ public class PlayerController : MonoBehaviour
             JumpChargedRelease();
     }
 
-    // 🔥 REBOTE QUE IGNORA TRIGGERS
+    // ---- Métodos para que el orbe registre al player ----
+    public void SetManualOrb(OrbManualJump orb)
+    {
+        manualOrb = orb;
+    }
+
+    public void ClearManualOrb(OrbManualJump orb)
+    {
+        if (manualOrb == orb)
+            manualOrb = null;
+    }
+
+    // REBOTE QUE IGNORA TRIGGERS
     void WallBounceCheck()
     {
         if (!enableWallBounce) return;
@@ -239,8 +300,6 @@ public class PlayerController : MonoBehaviour
         Debug.DrawRay(origin, Vector2.right * dirX * wallCheckDistance, Color.magenta);
 
         if (hit.collider == null) return;
-
-        // ✅ IGNORAR TRIGGERS
         if (hit.collider.isTrigger) return;
 
         float newVx = -dirX * wallBounceSpeed;
