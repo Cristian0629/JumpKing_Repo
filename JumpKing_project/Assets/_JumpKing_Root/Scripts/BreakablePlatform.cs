@@ -5,11 +5,12 @@ public class BreakablePlatform : MonoBehaviour
 {
     [Header("Timing")]
     [SerializeField] float breakDelay = 0.6f;
-    [SerializeField] float destroyAfter = 0.05f;
+    [SerializeField] float respawnDelayMin = 2f;
+    [SerializeField] float respawnDelayMax = 3f;
 
     [Header("Wobble (Visual Only)")]
-    [SerializeField] Transform visual;          // <-- arrastra aquí el hijo (sprite)
-    [SerializeField] float wobblePos = 0.04f;   // movimiento pequeño
+    [SerializeField] Transform visual;
+    [SerializeField] float wobblePos = 0.04f;
     [SerializeField] float wobbleSpeed = 35f;
 
     [Header("Rules")]
@@ -20,12 +21,18 @@ public class BreakablePlatform : MonoBehaviour
     Vector3 visualStartLocalPos;
     Collider2D col;
 
+    // Renderers a ocultar/mostrar (sprite, tilemap, etc.)
+    Renderer[] renderersToToggle;
+
     void Awake()
     {
         col = GetComponent<Collider2D>();
 
-        if (visual == null) visual = transform; // fallback
+        if (visual == null) visual = transform; // puedes seguir usando esto
         visualStartLocalPos = visual.localPosition;
+
+        // Pillamos TODOS los renderers dentro de "visual"
+        renderersToToggle = visual.GetComponentsInChildren<Renderer>(true);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -64,19 +71,39 @@ public class BreakablePlatform : MonoBehaviour
         {
             t += Time.deltaTime;
 
-            // Temblor VISUAL (no mueve collider)
             float s = Mathf.Sin(Time.time * wobbleSpeed);
             visual.localPosition = visualStartLocalPos + Vector3.right * (s * wobblePos);
 
             yield return null;
         }
 
-        // restaurar
+        // Restaurar posición visual
         visual.localPosition = visualStartLocalPos;
 
-        // romper
+        // "Romper": quitar colisión y ocultar
         if (col != null) col.enabled = false;
-        yield return new WaitForSeconds(destroyAfter);
-        Destroy(gameObject);
+        SetVisual(false);
+
+        // Esperar 2-3s (aleatorio)
+        float respawnDelay = Random.Range(respawnDelayMin, respawnDelayMax);
+        yield return new WaitForSeconds(respawnDelay);
+
+        // Reaparecer
+        SetVisual(true);
+        if (col != null) col.enabled = true;
+
+        triggered = false;
+    }
+
+    void SetVisual(bool on)
+    {
+        if (renderersToToggle == null) return;
+        for (int i = 0; i < renderersToToggle.Length; i++)
+        {
+            if (renderersToToggle[i] != null)
+                renderersToToggle[i].enabled = on;
+        }
     }
 }
+
+
