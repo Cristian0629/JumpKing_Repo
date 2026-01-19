@@ -17,22 +17,40 @@ public class BreakablePlatform : MonoBehaviour
     [SerializeField] bool breakOnlyIfPlayerAbove = true;
     [SerializeField] LayerMask playerLayer;
 
+    [Header("Above Check (Reliable)")]
+    [SerializeField] float aboveEpsilon = 0.05f;
+    [SerializeField] float mustBeFallingVelY = 0.05f;
+
+    [Header("Sprites")]
+    [SerializeField] Sprite normalSprite;
+    [SerializeField] Sprite crackedSprite;
+
+    [Header("Wood FX (Child Particle System)")]
+    [SerializeField] ParticleSystem woodParticles; // Pon aquí el Particle System hijo (WoodParticles)
+
     bool triggered;
     Vector3 visualStartLocalPos;
     Collider2D col;
 
-    // Renderers a ocultar/mostrar (sprite, tilemap, etc.)
     Renderer[] renderersToToggle;
+    SpriteRenderer sr;
 
     void Awake()
     {
         col = GetComponent<Collider2D>();
 
-        if (visual == null) visual = transform; // puedes seguir usando esto
+        if (visual == null) visual = transform;
         visualStartLocalPos = visual.localPosition;
 
-        // Pillamos TODOS los renderers dentro de "visual"
         renderersToToggle = visual.GetComponentsInChildren<Renderer>(true);
+
+        sr = visual.GetComponent<SpriteRenderer>();
+        if (sr != null && normalSprite != null)
+            sr.sprite = normalSprite;
+
+        // Si no lo asignaste a mano, intenta encontrarlo en hijos (incluso si está desactivado)
+        if (woodParticles == null)
+            woodParticles = GetComponentInChildren<ParticleSystem>(true);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -40,18 +58,32 @@ public class BreakablePlatform : MonoBehaviour
         if (triggered) return;
         if (!IsPlayer(collision.collider)) return;
 
-        if (breakOnlyIfPlayerAbove)
-        {
-            bool fromAbove = false;
-            foreach (var c in collision.contacts)
-            {
-                if (c.normal.y > 0.5f) { fromAbove = true; break; }
-            }
-            if (!fromAbove) return;
-        }
+        if (breakOnlyIfPlayerAbove && !CameFromAbove(collision))
+            return;
+
+        // Cambiar a sprite "agrietado" al pisar
+        if (sr != null && crackedSprite != null)
+            sr.sprite = crackedSprite;
 
         triggered = true;
         StartCoroutine(BreakRoutine());
+    }
+
+    bool CameFromAbove(Collision2D collision)
+    {
+        if (col == null) return false;
+
+        Bounds playerB = collision.collider.bounds;
+        Bounds platB = col.bounds;
+
+        // Debe estar por encima de la plataforma
+        bool playerIsAboveTop = playerB.min.y >= (platB.max.y - aboveEpsilon);
+        if (!playerIsAboveTop) return false;
+
+        // Debe venir cayendo (si golpea desde abajo, esto suele ser positivo)
+        if (collision.relativeVelocity.y > mustBeFallingVelY) return false;
+
+        return true;
     }
 
     bool IsPlayer(Collider2D other)
@@ -80,11 +112,14 @@ public class BreakablePlatform : MonoBehaviour
         // Restaurar posición visual
         visual.localPosition = visualStartLocalPos;
 
-        // "Romper": quitar colisión y ocultar
+        // FX de madera justo al romper
+        PlayWoodFX();
+
+        // Romper: quitar colisión y ocultar
         if (col != null) col.enabled = false;
         SetVisual(false);
 
-        // Esperar 2-3s (aleatorio)
+        // Esperar respawn
         float respawnDelay = Random.Range(respawnDelayMin, respawnDelayMax);
         yield return new WaitForSeconds(respawnDelay);
 
@@ -92,7 +127,23 @@ public class BreakablePlatform : MonoBehaviour
         SetVisual(true);
         if (col != null) col.enabled = true;
 
+        // Volver al sprite normal
+        if (sr != null && normalSprite != null)
+            sr.sprite = normalSprite;
+
         triggered = false;
+    }
+
+    void PlayWoodFX()
+    {
+        if (woodParticles == null) return;
+
+        // Por si el objeto está desactivado en la jerarquía
+        woodParticles.gameObject.SetActive(true);
+
+        // Reinicia para que siempre se vea el burst desde 0
+        woodParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        woodParticles.Play(true);
     }
 
     void SetVisual(bool on)
@@ -105,5 +156,3 @@ public class BreakablePlatform : MonoBehaviour
         }
     }
 }
-
-
