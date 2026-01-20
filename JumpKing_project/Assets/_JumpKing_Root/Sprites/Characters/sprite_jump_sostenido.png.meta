@@ -149,6 +149,32 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -156,12 +182,12 @@ TextureImporter:
       name: sprite_jump_sostenido_0
       rect:
         serializedVersion: 2
-        x: 31
-        y: 9
-        width: 26
-        height: 34
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 96
+        height: 69
+      alignment: 9
+      pivot: {x: 0.50034064, y: 0.14916724}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -178,12 +204,12 @@ TextureImporter:
       name: sprite_jump_sostenido_1
       rect:
         serializedVersion: 2
-        x: 127
-        y: 9
-        width: 26
-        height: 33
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 96
+        y: 0
+        width: 96
+        height: 69
+      alignment: 9
+      pivot: {x: 0.50155336, y: 0.14280137}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -200,12 +226,12 @@ TextureImporter:
       name: sprite_jump_sostenido_2
       rect:
         serializedVersion: 2
-        x: 223
-        y: 9
-        width: 26
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 0
+        width: 96
+        height: 69
+      alignment: 9
+      pivot: {x: 0.5030982, y: 0.13878566}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -222,12 +248,12 @@ TextureImporter:
       name: sprite_jump_sostenido_3
       rect:
         serializedVersion: 2
-        x: 319
-        y: 9
-        width: 26
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 288
+        y: 0
+        width: 96
+        height: 69
+      alignment: 9
+      pivot: {x: 0.5027857, y: 0.14209172}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -244,12 +270,12 @@ TextureImporter:
       name: sprite_jump_sostenido_4
       rect:
         serializedVersion: 2
-        x: 415
-        y: 9
-        width: 26
-        height: 39
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 384
+        y: 0
+        width: 96
+        height: 69
+      alignment: 9
+      pivot: {x: 0.4923207, y: 0.12589124}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -266,12 +292,12 @@ TextureImporter:
       name: sprite_jump_sostenido_5
       rect:
         serializedVersion: 2
-        x: 511
-        y: 13
-        width: 26
-        height: 39
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 480
+        y: 0
+        width: 96
+        height: 69
+      alignment: 9
+      pivot: {x: 0.5006917, y: 0.13437575}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -288,12 +314,12 @@ TextureImporter:
       name: sprite_jump_sostenido_6
       rect:
         serializedVersion: 2
-        x: 608
-        y: 15
-        width: 26
-        height: 39
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 576
+        y: 0
+        width: 96
+        height: 69
+      alignment: 9
+      pivot: {x: 0.502182, y: 0.13257156}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -310,12 +336,12 @@ TextureImporter:
       name: sprite_jump_sostenido_7
       rect:
         serializedVersion: 2
-        x: 702
-        y: 17
-        width: 28
-        height: 37
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 672
+        y: 0
+        width: 96
+        height: 69
+      alignment: 9
+      pivot: {x: 0.49703154, y: 0.12540554}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -332,12 +358,12 @@ TextureImporter:
       name: sprite_jump_sostenido_8
       rect:
         serializedVersion: 2
-        x: 798
-        y: 15
-        width: 27
-        height: 39
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 768
+        y: 0
+        width: 96
+        height: 69
+      alignment: 9
+      pivot: {x: 0.506567, y: 0.15749513}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -354,12 +380,12 @@ TextureImporter:
       name: sprite_jump_sostenido_9
       rect:
         serializedVersion: 2
-        x: 895
-        y: 8
-        width: 27
-        height: 39
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 864
+        y: 0
+        width: 96
+        height: 69
+      alignment: 9
+      pivot: {x: 0.51222736, y: 0.145683}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -376,7 +402,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 63a3fe341997fbf43a78c770ddd7b428
     internalID: 0
     vertices: []
     indices: 
@@ -384,7 +410,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":10.0,"y":1.0},"gridSpriteSize":{"x":96.0,"y":69.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":6,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       sprite_jump_sostenido_0: 8918995755964467212
       sprite_jump_sostenido_1: -1041029090368770703
