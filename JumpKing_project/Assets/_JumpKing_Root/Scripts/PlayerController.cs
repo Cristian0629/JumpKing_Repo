@@ -40,7 +40,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float minVerticalSpeedForBounce = 0.2f;
     [SerializeField] float minHorizontalSpeedForBounce = 0.5f;
 
-    // ---- ORBE MANUAL ----
     OrbManualJump manualOrb;
 
     Rigidbody2D playerRb;
@@ -62,11 +61,9 @@ public class PlayerController : MonoBehaviour
     bool wallBounceLocked;
     float wallBounceTimer;
 
-    // ---- mantener dirección del salto si no hay input en el aire ----
     float airborneLockedX;
     bool hasAirborneLockedX;
 
-    // ✅ NUEVO: permitir moverte/saltar aunque exista landing cooldown (para plataformas frágiles, etc.)
     bool ignoreLandingMoveLock;
     public void SetNoLandingLock(bool v) => ignoreLandingMoveLock = v;
 
@@ -120,7 +117,6 @@ public class PlayerController : MonoBehaviour
         {
             moveLockedAfterLanding = true;
             landingMoveTimer = landingMoveCooldown;
-
             hasAirborneLockedX = false;
         }
         wasGrounded = isGrounded;
@@ -160,7 +156,6 @@ public class PlayerController : MonoBehaviour
 
     void Movement()
     {
-        // --- Aire ---
         if (!isGrounded)
         {
             if (blockMoveInAir) return;
@@ -175,8 +170,6 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        // --- Suelo ---
-        // ✅ MODIFICADO: solo bloquea si NO estamos ignorando el lock (plataforma frágil temblando, etc.)
         if (moveLockedAfterLanding && isGrounded && !ignoreLandingMoveLock)
         {
             playerRb.linearVelocity = new Vector2(0f, playerRb.linearVelocity.y);
@@ -200,8 +193,6 @@ public class PlayerController : MonoBehaviour
         float jumpForce = Mathf.Lerp(minJumpForce, maxJumpForce, t);
 
         float xDir = Mathf.Clamp(moveInput.x, -1f, 1f);
-
-        // Si no hay input horizontal, usa hacia donde mira
         if (Mathf.Abs(xDir) < 0.01f)
             xDir = isFacingRight ? 1f : -1f;
 
@@ -245,7 +236,6 @@ public class PlayerController : MonoBehaviour
 
     void OnJumpStarted(InputAction.CallbackContext ctx)
     {
-        // ORBE MANUAL en el aire
         if (!isGrounded && manualOrb != null)
         {
             bool activated = manualOrb.TryActivate(moveInput);
@@ -263,7 +253,6 @@ public class PlayerController : MonoBehaviour
             JumpChargedRelease();
     }
 
-    // ---- Métodos para que el orbe registre al player ----
     public void SetManualOrb(OrbManualJump orb)
     {
         manualOrb = orb;
@@ -275,7 +264,6 @@ public class PlayerController : MonoBehaviour
             manualOrb = null;
     }
 
-    // REBOTE QUE IGNORA TRIGGERS
     void WallBounceCheck()
     {
         if (!enableWallBounce) return;
