@@ -40,6 +40,37 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float minVerticalSpeedForBounce = 0.2f;
     [SerializeField] float minHorizontalSpeedForBounce = 0.5f;
 
+    [Header("Hard Fall")]
+    [SerializeField] float hardFallMinDistance = 6f;
+
+    // =========================
+    // ✅ TORNADO
+    // =========================
+    [Header("Tornado")]
+    [SerializeField] bool enableTornado = true;
+    [SerializeField] SpriteRenderer[] renderersToHide;   // si lo dejas vacío, se auto-detecta
+    [SerializeField] bool disableAnimatorWhileInside = true;
+
+    [Header("Tornado Exit Fix")]
+    [SerializeField] float tornadoExitYOffset = 0.6f;        // (YA NO SE USA, puedes dejarlo)
+    [SerializeField] float tornadoReenterBlockTime = 0.15f;  // tiempo sin re-entrar al mismo tornado
+
+    // ✅ delay para reactivar el collider al salir (evita reenganche)
+    [Header("Tornado Visual Exit")]
+    [SerializeField] float tornadoColliderEnableDelay = 0.10f;
+
+    bool insideTornado;
+    TornadoZone2D currentTornado;
+    float tornadoAngleDeg;
+
+    Vector3 lastTornadoHoldPos;
+    Vector3 prevTornadoHoldPos; // ✅ NUEVO: holdpoint del frame anterior
+
+    float tornadoReenterBlockTimer;
+    TornadoZone2D lastExitedTornado;
+
+    float tornadoColliderEnableTimer;
+
     OrbManualJump manualOrb;
 
     Rigidbody2D playerRb;
@@ -67,12 +98,25 @@ public class PlayerController : MonoBehaviour
     bool ignoreLandingMoveLock;
     public void SetNoLandingLock(bool v) => ignoreLandingMoveLock = v;
 
+    float jumpAnimBuffer;
+    float standUpJumpBuffer;
+
+    float fallStartY;
+    bool measuringFall;
+
+    bool hardFallDowned;
+
+    bool jumpHeld;
+
     private void Awake()
     {
         playerRb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         playerInput = GetComponent<PlayerInput>();
         playerCol = GetComponent<Collider2D>();
+
+        if (renderersToHide == null || renderersToHide.Length == 0)
+            renderersToHide = GetComponentsInChildren<SpriteRenderer>(true);
     }
 
     private void OnEnable()
@@ -107,18 +151,93 @@ public class PlayerController : MonoBehaviour
         airborneLockedX = 0f;
 
         ignoreLandingMoveLock = false;
+
+        jumpAnimBuffer = 0f;
+        standUpJumpBuffer = 0f;
+
+        measuringFall = false;
+        fallStartY = transform.position.y;
+
+        hardFallDowned = false;
+        anim.SetBool("IsFallingHard", false);
+
+        jumpHeld = false;
+
+        insideTornado = false;
+        currentTornado = null;
+
+        lastTornadoHoldPos = Vector3.zero;
+        prevTornadoHoldPos = Vector3.zero;
+
+        tornadoReenterBlockTimer = 0f;
+        lastExitedTornado = null;
+
+        tornadoColliderEnableTimer = 0f;
     }
 
     void Update()
     {
+        if (tornadoReenterBlockTimer > 0f)
+            tornadoReenterBlockTimer -= Time.deltaTime;
+
+        if (tornadoColliderEnableTimer > 0f)
+        {
+            tornadoColliderEnableTimer -= Time.deltaTime;
+            if (tornadoColliderEnableTimer <= 0f && playerCol != null)
+                playerCol.enabled = true;
+        }
+
+        if (enableTornado && insideTornado)
+        {
+            if (jumpAnimBuffer > 0f) jumpAnimBuffer -= Time.deltaTime;
+            if (standUpJumpBuffer > 0f) standUpJumpBuffer -= Time.deltaTime;
+            return;
+        }
+
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+
+        AnimationManagement();
+
+        if (jumpAnimBuffer > 0f)
+            jumpAnimBuffer -= Time.deltaTime;
+
+        if (standUpJumpBuffer > 0f)
+            standUpJumpBuffer -= Time.deltaTime;
+
+        if (wasGrounded && !isGrounded)
+        {
+            measuringFall = true;
+            fallStartY = transform.position.y;
+
+            if (isChargingJump)
+            {
+                isChargingJump = false;
+                chargeTimer = 0f;
+                jumpHeld = false;
+            }
+        }
 
         if (!wasGrounded && isGrounded)
         {
             moveLockedAfterLanding = true;
             landingMoveTimer = landingMoveCooldown;
             hasAirborneLockedX = false;
+
+            if (measuringFall)
+            {
+                float fallDistance = fallStartY - transform.position.y;
+
+                if (fallDistance >= hardFallMinDistance)
+                {
+                    hardFallDowned = true;
+                    anim.SetBool("IsFallingHard", true);
+                    anim.SetTrigger("HardFall");
+                }
+
+                measuringFall = false;
+            }
         }
+
         wasGrounded = isGrounded;
 
         if (moveLockedAfterLanding)
@@ -144,18 +263,46 @@ public class PlayerController : MonoBehaviour
                 JumpChargedRelease();
         }
 
-        if (moveInput.x > 0 && !isFacingRight) Flip();
-        if (moveInput.x < 0 && isFacingRight) Flip();
+        if (!hardFallDowned)
+        {
+            if (moveInput.x > 0 && !isFacingRight) Flip();
+            if (moveInput.x < 0 && isFacingRight) Flip();
+        }
     }
 
     private void FixedUpdate()
     {
+        if (enableTornado && insideTornado && currentTornado != null)
+        {
+            Transform hp = currentTornado.HoldPoint;
+
+            // ✅ guardamos el holdpoint del frame anterior
+            prevTornadoHoldPos = lastTornadoHoldPos;
+
+            tornadoAngleDeg += currentTornado.OrbitSpeed * Time.fixedDeltaTime;
+            float rad = tornadoAngleDeg * Mathf.Deg2Rad;
+
+            Vector2 offset = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * currentTornado.OrbitRadius;
+            transform.position = hp.position + (Vector3)offset;
+
+            // ✅ guardamos el holdpoint actual
+            lastTornadoHoldPos = hp.position;
+
+            return;
+        }
+
         WallBounceCheck();
         Movement();
     }
 
     void Movement()
     {
+        if (hardFallDowned && isGrounded)
+        {
+            playerRb.linearVelocity = new Vector2(0f, playerRb.linearVelocity.y);
+            return;
+        }
+
         if (!isGrounded)
         {
             if (blockMoveInAir) return;
@@ -209,11 +356,22 @@ public class PlayerController : MonoBehaviour
 
         playerRb.linearVelocity = jumpVelocity;
 
+        anim.SetTrigger("Jump");
+        jumpAnimBuffer = 0.08f;
+
         airborneLockedX = jumpVelocity.x;
         hasAirborneLockedX = true;
 
         isChargingJump = false;
         chargeTimer = 0f;
+        jumpHeld = false;
+
+        if (hardFallDowned)
+        {
+            hardFallDowned = false;
+            anim.SetBool("IsFallingHard", false);
+            standUpJumpBuffer = Mathf.Max(standUpJumpBuffer, 0.25f);
+        }
     }
 
     void Flip()
@@ -236,6 +394,12 @@ public class PlayerController : MonoBehaviour
 
     void OnJumpStarted(InputAction.CallbackContext ctx)
     {
+        if (enableTornado && insideTornado && currentTornado != null)
+        {
+            ExitTornado();
+            return;
+        }
+
         if (!isGrounded && manualOrb != null)
         {
             bool activated = manualOrb.TryActivate(moveInput);
@@ -243,20 +407,32 @@ public class PlayerController : MonoBehaviour
         }
 
         if (!isGrounded) return;
+
+        if (hardFallDowned)
+        {
+            standUpJumpBuffer = 0.25f;
+            anim.SetBool("IsFallingHard", false);
+            anim.ResetTrigger("HardFall");
+        }
+
+        anim.ResetTrigger("Jump");
         isChargingJump = true;
         chargeTimer = 0f;
+
+        jumpHeld = true;
     }
 
     void OnJumpCanceled(InputAction.CallbackContext ctx)
     {
+        if (!jumpHeld) return;
+
         if (isChargingJump && isGrounded)
             JumpChargedRelease();
+
+        jumpHeld = false;
     }
 
-    public void SetManualOrb(OrbManualJump orb)
-    {
-        manualOrb = orb;
-    }
+    public void SetManualOrb(OrbManualJump orb) => manualOrb = orb;
 
     public void ClearManualOrb(OrbManualJump orb)
     {
@@ -295,5 +471,116 @@ public class PlayerController : MonoBehaviour
 
         wallBounceLocked = true;
         wallBounceTimer = wallBounceLockTime;
+    }
+
+    void AnimationManagement()
+    {
+        bool forceJumping = standUpJumpBuffer > 0f;
+
+        bool walking =
+            Mathf.Abs(moveInput.x) > 0.01f &&
+            isGrounded &&
+            !isChargingJump &&
+            !hardFallDowned &&
+            !forceJumping;
+
+        anim.SetBool("Walking", walking);
+
+        bool jumping =
+            forceJumping ||
+            jumpAnimBuffer > 0f ||
+            (!isGrounded && !isChargingJump);
+
+        anim.SetBool("Jumping", jumping);
+        anim.SetBool("IsCharging", isChargingJump && isGrounded);
+        anim.SetFloat("YVelocity", playerRb.linearVelocity.y);
+        anim.SetBool("IsFallingHard", hardFallDowned);
+    }
+
+    // =========================================================
+    // ✅ TORNADO API
+    // =========================================================
+
+    public void EnterTornado(TornadoZone2D tornado)
+    {
+        if (!enableTornado) return;
+        if (insideTornado) return;
+        if (tornado == null) return;
+
+        if (tornadoReenterBlockTimer > 0f && tornado == lastExitedTornado)
+            return;
+
+        isChargingJump = false;
+        chargeTimer = 0f;
+        jumpHeld = false;
+
+        currentTornado = tornado;
+        insideTornado = true;
+
+        tornadoAngleDeg = Random.Range(0f, 360f);
+
+        // Inicializamos ambos para que el primer cálculo de Vx no sea basura
+        lastTornadoHoldPos = currentTornado.HoldPoint.position;
+        prevTornadoHoldPos = lastTornadoHoldPos;
+
+        SetPlayerVisible(false);
+
+        if (playerCol != null) playerCol.enabled = false;
+
+        if (playerRb != null)
+        {
+            playerRb.linearVelocity = Vector2.zero;
+            playerRb.simulated = false;
+        }
+    }
+
+    void ExitTornado()
+    {
+        if (!insideTornado || currentTornado == null) return;
+
+        lastExitedTornado = currentTornado;
+        tornadoReenterBlockTimer = tornadoReenterBlockTime;
+
+        insideTornado = false;
+
+        // ✅ IMPORTANTE: NO TOCAMOS transform.position
+        // Así NO se teletransporta al HoldPoint (rayo) y se ve la trayectoria real.
+
+        // Reaparecer visualmente
+        SetPlayerVisible(true);
+
+        // Reactivar física + impulso
+        if (playerRb != null)
+        {
+            playerRb.simulated = true;
+
+            float tornadoVx = (lastTornadoHoldPos.x - prevTornadoHoldPos.x) / Time.fixedDeltaTime;
+            float vx = tornadoVx * currentTornado.LaunchSideCarry;
+            float vy = currentTornado.LaunchUpSpeed;
+
+            playerRb.linearVelocity = new Vector2(vx, vy);
+        }
+
+        // Collider delay para no re-entrar instantáneo
+        if (playerCol != null)
+        {
+            playerCol.enabled = false;
+            tornadoColliderEnableTimer = tornadoColliderEnableDelay;
+        }
+
+        wasGrounded = false;
+        currentTornado = null;
+    }
+
+    void SetPlayerVisible(bool visible)
+    {
+        if (renderersToHide != null)
+        {
+            for (int i = 0; i < renderersToHide.Length; i++)
+                if (renderersToHide[i] != null) renderersToHide[i].enabled = visible;
+        }
+
+        if (disableAnimatorWhileInside && anim != null)
+            anim.enabled = visible;
     }
 }
