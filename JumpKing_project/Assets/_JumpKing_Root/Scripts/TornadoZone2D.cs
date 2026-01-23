@@ -29,7 +29,7 @@ public class TornadoZone2D : MonoBehaviour
 
         // ✅ AHORA LLAMA AL PlayerController (que ya tiene EnterTornado)
         var pc = other.GetComponent<PlayerController>();
-        if (pc != null)
-            pc.EnterTornado(this);
+        //if (pc != null)
+            //pc.EnterTornado(this);
     }
 }
