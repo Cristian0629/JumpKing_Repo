@@ -1,21 +1,16 @@
 using UnityEngine;
 
-public class Meta : MonoBehaviour
+public class Meta2D : MonoBehaviour
 {
-    // Este método detecta cuando algo entra en el cuadrado de la meta
+    // Arrastra aquí el objeto que contiene el script VictoriaManager
+    public VictoriaManager victoriaManager;
+
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // ¿El objeto que entró tiene la etiqueta "Player"?
+        // Verifica que el objeto que entra tenga el Tag "Player"
         if (other.CompareTag("Player"))
         {
-            // Busca el script VictoriaManager que ya configuraste antes
-            VictoriaManager gestor = FindObjectOfType<VictoriaManager>();
-
-            if (gestor != null)
-            {
-                gestor.MostrarVictoria(); // Llama a la función que enciende la foto
-            }
+            victoriaManager.MostrarVictoria();
         }
     }
 }
-
