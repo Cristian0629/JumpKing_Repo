@@ -60,6 +60,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] AudioClip jumpClip;
     [SerializeField, Range(0f, 1f)] float jumpVolume = 1f;
 
+    [Header("Orb Jump SFX")]
+    [SerializeField] AudioClip orbJumpClip;                 // arrastra aquí el audio "jump"
+    [SerializeField, Range(0f, 1f)] float orbJumpVolume = 1f;
+
+
     // ✅ NUEVO: caída fuerte (back_004)
     [Header("Hard Fall SFX")]
     [SerializeField] AudioClip hardFallClip;
@@ -480,8 +485,16 @@ public class PlayerController : MonoBehaviour
         if (!isGrounded && manualOrb != null)
         {
             bool activated = manualOrb.TryActivate(moveInput);
-            if (activated) return;
+            if (activated)
+            {
+                // 🔊 SFX salto de ORBE (distinto al salto normal)
+                if (orbJumpClip != null && sfxSource != null)
+                    sfxSource.PlayOneShot(orbJumpClip, orbJumpVolume);
+
+                return;
+            }
         }
+
 
         if (!isGrounded) return;
 
