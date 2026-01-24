@@ -48,14 +48,13 @@ public class PlayerController : MonoBehaviour
     // =========================
     [Header("Tornado")]
     [SerializeField] bool enableTornado = true;
-    [SerializeField] SpriteRenderer[] renderersToHide;   // si lo dejas vacío, se auto-detecta
+    [SerializeField] SpriteRenderer[] renderersToHide;
     [SerializeField] bool disableAnimatorWhileInside = true;
 
     [Header("Tornado Exit Fix")]
-    [SerializeField] float tornadoExitYOffset = 0.6f;        // (YA NO SE USA, puedes dejarlo)
-    [SerializeField] float tornadoReenterBlockTime = 0.15f;  // tiempo sin re-entrar al mismo tornado
+    [SerializeField] float tornadoExitYOffset = 0.6f;        // (YA NO SE USA)
+    [SerializeField] float tornadoReenterBlockTime = 0.15f;
 
-    // ✅ delay para reactivar el collider al salir (evita reenganche)
     [Header("Tornado Visual Exit")]
     [SerializeField] float tornadoColliderEnableDelay = 0.10f;
 
@@ -64,7 +63,7 @@ public class PlayerController : MonoBehaviour
     float tornadoAngleDeg;
 
     Vector3 lastTornadoHoldPos;
-    Vector3 prevTornadoHoldPos; // ✅ NUEVO: holdpoint del frame anterior
+    Vector3 prevTornadoHoldPos;
 
     float tornadoReenterBlockTimer;
     TornadoZone2D lastExitedTornado;
@@ -107,6 +106,9 @@ public class PlayerController : MonoBehaviour
     bool hardFallDowned;
 
     bool jumpHeld;
+
+    // ✅ para no estar poniendo speed cada frame innecesariamente
+    bool animatorFrozenByPause;
 
     private void Awake()
     {
@@ -173,10 +175,39 @@ public class PlayerController : MonoBehaviour
         lastExitedTornado = null;
 
         tornadoColliderEnableTimer = 0f;
+
+        animatorFrozenByPause = false;
     }
 
     void Update()
     {
+        // =========================
+        // ⏸ PAUSA GLOBAL (EVITA GIROS + INPUT)
+        // =========================
+        if (PauseState.IsPaused)
+        {
+            // Limpia input para que no quede guardado
+            moveInput = Vector2.zero;
+
+            // Congela animaciones del personaje
+            if (anim != null && !animatorFrozenByPause)
+            {
+                anim.speed = 0f;
+                animatorFrozenByPause = true;
+            }
+
+            return;
+        }
+        else
+        {
+            // Si venimos de pausa, reanuda animaciones
+            if (anim != null && animatorFrozenByPause)
+            {
+                anim.speed = 1f;
+                animatorFrozenByPause = false;
+            }
+        }
+
         if (tornadoReenterBlockTimer > 0f)
             tornadoReenterBlockTimer -= Time.deltaTime;
 
@@ -272,11 +303,16 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // =========================
+        // ⏸ PAUSA GLOBAL
+        // =========================
+        if (PauseState.IsPaused)
+            return;
+
         if (enableTornado && insideTornado && currentTornado != null)
         {
             Transform hp = currentTornado.HoldPoint;
 
-            // ✅ guardamos el holdpoint del frame anterior
             prevTornadoHoldPos = lastTornadoHoldPos;
 
             tornadoAngleDeg += currentTornado.OrbitSpeed * Time.fixedDeltaTime;
@@ -285,7 +321,6 @@ public class PlayerController : MonoBehaviour
             Vector2 offset = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * currentTornado.OrbitRadius;
             transform.position = hp.position + (Vector3)offset;
 
-            // ✅ guardamos el holdpoint actual
             lastTornadoHoldPos = hp.position;
 
             return;
@@ -384,6 +419,7 @@ public class PlayerController : MonoBehaviour
 
     void OnMovePerformed(InputAction.CallbackContext ctx)
     {
+        if (PauseState.IsPaused) return;
         moveInput = ctx.ReadValue<Vector2>();
     }
 
@@ -394,6 +430,8 @@ public class PlayerController : MonoBehaviour
 
     void OnJumpStarted(InputAction.CallbackContext ctx)
     {
+        if (PauseState.IsPaused) return;
+
         if (enableTornado && insideTornado && currentTornado != null)
         {
             ExitTornado();
@@ -424,6 +462,8 @@ public class PlayerController : MonoBehaviour
 
     void OnJumpCanceled(InputAction.CallbackContext ctx)
     {
+        if (PauseState.IsPaused) return;
+
         if (!jumpHeld) return;
 
         if (isChargingJump && isGrounded)
@@ -519,7 +559,6 @@ public class PlayerController : MonoBehaviour
 
         tornadoAngleDeg = Random.Range(0f, 360f);
 
-        // Inicializamos ambos para que el primer cálculo de Vx no sea basura
         lastTornadoHoldPos = currentTornado.HoldPoint.position;
         prevTornadoHoldPos = lastTornadoHoldPos;
 
@@ -543,13 +582,8 @@ public class PlayerController : MonoBehaviour
 
         insideTornado = false;
 
-        // ✅ IMPORTANTE: NO TOCAMOS transform.position
-        // Así NO se teletransporta al HoldPoint (rayo) y se ve la trayectoria real.
-
-        // Reaparecer visualmente
         SetPlayerVisible(true);
 
-        // Reactivar física + impulso
         if (playerRb != null)
         {
             playerRb.simulated = true;
@@ -561,7 +595,6 @@ public class PlayerController : MonoBehaviour
             playerRb.linearVelocity = new Vector2(vx, vy);
         }
 
-        // Collider delay para no re-entrar instantáneo
         if (playerCol != null)
         {
             playerCol.enabled = false;
