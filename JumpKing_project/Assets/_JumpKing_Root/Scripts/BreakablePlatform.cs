@@ -26,7 +26,24 @@ public class BreakablePlatform : MonoBehaviour
     [SerializeField] Sprite crackedSprite;
 
     [Header("Wood FX (Child Particle System)")]
-    [SerializeField] ParticleSystem woodParticles; // Pon aquí el Particle System hijo (WoodParticles)
+    [SerializeField] ParticleSystem woodParticles;
+
+    // =========================
+    // 🔊 AUDIO
+    // =========================
+    [Header("Audio")]
+    [SerializeField] AudioSource sfxSource;
+
+    [Header("Audio - Crack (On Step)")]
+    [SerializeField] AudioClip woodCrackClip;
+    [SerializeField, Range(0f, 1f)] float woodCrackVolume = 0.8f;
+
+    [Header("Audio - Break (On Break)")]
+    [SerializeField] AudioClip woodBreakClip;
+    [SerializeField, Range(0f, 1f)] float woodBreakVolume = 1f;
+
+    [SerializeField, Range(0f, 0.2f)] float sfxCooldown = 0.05f;
+    float sfxCooldownTimer;
 
     bool triggered;
     Vector3 visualStartLocalPos;
@@ -48,9 +65,19 @@ public class BreakablePlatform : MonoBehaviour
         if (sr != null && normalSprite != null)
             sr.sprite = normalSprite;
 
-        // Si no lo asignaste a mano, intenta encontrarlo en hijos (incluso si está desactivado)
         if (woodParticles == null)
             woodParticles = GetComponentInChildren<ParticleSystem>(true);
+
+        if (sfxSource == null)
+            sfxSource = GetComponent<AudioSource>();
+
+        sfxCooldownTimer = 0f;
+    }
+
+    void Update()
+    {
+        if (sfxCooldownTimer > 0f)
+            sfxCooldownTimer -= Time.deltaTime;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -65,6 +92,9 @@ public class BreakablePlatform : MonoBehaviour
         if (sr != null && crackedSprite != null)
             sr.sprite = crackedSprite;
 
+        // 🔊 SONIDO AL PISAR (agrietado)
+        PlaySfx(woodCrackClip, woodCrackVolume);
+
         triggered = true;
         StartCoroutine(BreakRoutine());
     }
@@ -76,11 +106,9 @@ public class BreakablePlatform : MonoBehaviour
         Bounds playerB = collision.collider.bounds;
         Bounds platB = col.bounds;
 
-        // Debe estar por encima de la plataforma
         bool playerIsAboveTop = playerB.min.y >= (platB.max.y - aboveEpsilon);
         if (!playerIsAboveTop) return false;
 
-        // Debe venir cayendo (si golpea desde abajo, esto suele ser positivo)
         if (collision.relativeVelocity.y > mustBeFallingVelY) return false;
 
         return true;
@@ -109,39 +137,44 @@ public class BreakablePlatform : MonoBehaviour
             yield return null;
         }
 
-        // Restaurar posición visual
         visual.localPosition = visualStartLocalPos;
 
-        // FX de madera justo al romper
+        // 🔊 SONIDO AL ROMPERSE
+        PlaySfx(woodBreakClip, woodBreakVolume);
+
+        // FX de madera
         PlayWoodFX();
 
         // Romper: quitar colisión y ocultar
         if (col != null) col.enabled = false;
         SetVisual(false);
 
-        // Esperar respawn
         float respawnDelay = Random.Range(respawnDelayMin, respawnDelayMax);
         yield return new WaitForSeconds(respawnDelay);
 
-        // Reaparecer
         SetVisual(true);
         if (col != null) col.enabled = true;
 
-        // Volver al sprite normal
         if (sr != null && normalSprite != null)
             sr.sprite = normalSprite;
 
         triggered = false;
     }
 
+    void PlaySfx(AudioClip clip, float volume)
+    {
+        if (clip == null || sfxSource == null) return;
+        if (sfxCooldownTimer > 0f) return;
+
+        sfxSource.PlayOneShot(clip, volume);
+        sfxCooldownTimer = sfxCooldown;
+    }
+
     void PlayWoodFX()
     {
         if (woodParticles == null) return;
 
-        // Por si el objeto está desactivado en la jerarquía
         woodParticles.gameObject.SetActive(true);
-
-        // Reinicia para que siempre se vea el burst desde 0
         woodParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         woodParticles.Play(true);
     }

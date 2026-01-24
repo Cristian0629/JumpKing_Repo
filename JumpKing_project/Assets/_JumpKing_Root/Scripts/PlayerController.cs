@@ -44,6 +44,33 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float hardFallMinDistance = 6f;
 
     // =========================
+    // 🔊 AUDIO
+    // =========================
+    [Header("Audio")]
+    [SerializeField] AudioSource sfxSource;
+    [SerializeField] AudioClip wallHitClip;
+    [SerializeField, Range(0f, 0.2f)] float wallHitCooldown = 0.05f;
+
+    [SerializeField] AudioClip footstepClip;
+    [SerializeField, Range(0.05f, 1f)] float footstepInterval = 0.33f;
+    [SerializeField, Range(0f, 1f)] float footstepVolume = 0.8f;
+    [SerializeField] bool footstepsOnlyGrounded = true;
+
+    [Header("Jump SFX")]
+    [SerializeField] AudioClip jumpClip;
+    [SerializeField, Range(0f, 1f)] float jumpVolume = 1f;
+
+    // ✅ NUEVO: caída fuerte (back_004)
+    [Header("Hard Fall SFX")]
+    [SerializeField] AudioClip hardFallClip;
+    [SerializeField, Range(0f, 1f)] float hardFallVolume = 1f;
+
+    float footstepTimer;
+    bool wasWalking;
+
+    float wallHitCooldownTimer;
+
+    // =========================
     // ✅ TORNADO
     // =========================
     [Header("Tornado")]
@@ -107,7 +134,6 @@ public class PlayerController : MonoBehaviour
 
     bool jumpHeld;
 
-    // ✅ para no estar poniendo speed cada frame innecesariamente
     bool animatorFrozenByPause;
 
     private void Awake()
@@ -119,6 +145,9 @@ public class PlayerController : MonoBehaviour
 
         if (renderersToHide == null || renderersToHide.Length == 0)
             renderersToHide = GetComponentsInChildren<SpriteRenderer>(true);
+
+        if (sfxSource == null)
+            sfxSource = GetComponent<AudioSource>();
     }
 
     private void OnEnable()
@@ -165,6 +194,9 @@ public class PlayerController : MonoBehaviour
 
         jumpHeld = false;
 
+        footstepTimer = 0f;
+        wasWalking = false;
+
         insideTornado = false;
         currentTornado = null;
 
@@ -177,19 +209,16 @@ public class PlayerController : MonoBehaviour
         tornadoColliderEnableTimer = 0f;
 
         animatorFrozenByPause = false;
+
+        wallHitCooldownTimer = 0f;
     }
 
     void Update()
     {
-        // =========================
-        // ⏸ PAUSA GLOBAL (EVITA GIROS + INPUT)
-        // =========================
         if (PauseState.IsPaused)
         {
-            // Limpia input para que no quede guardado
             moveInput = Vector2.zero;
 
-            // Congela animaciones del personaje
             if (anim != null && !animatorFrozenByPause)
             {
                 anim.speed = 0f;
@@ -200,13 +229,15 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            // Si venimos de pausa, reanuda animaciones
             if (anim != null && animatorFrozenByPause)
             {
                 anim.speed = 1f;
                 animatorFrozenByPause = false;
             }
         }
+
+        if (wallHitCooldownTimer > 0f)
+            wallHitCooldownTimer -= Time.deltaTime;
 
         if (tornadoReenterBlockTimer > 0f)
             tornadoReenterBlockTimer -= Time.deltaTime;
@@ -228,6 +259,7 @@ public class PlayerController : MonoBehaviour
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
         AnimationManagement();
+        HandleFootsteps();
 
         if (jumpAnimBuffer > 0f)
             jumpAnimBuffer -= Time.deltaTime;
@@ -263,6 +295,10 @@ public class PlayerController : MonoBehaviour
                     hardFallDowned = true;
                     anim.SetBool("IsFallingHard", true);
                     anim.SetTrigger("HardFall");
+
+                    // 🔊 SFX caída fuerte (back_004)
+                    if (hardFallClip != null && sfxSource != null)
+                        sfxSource.PlayOneShot(hardFallClip, hardFallVolume);
                 }
 
                 measuringFall = false;
@@ -290,8 +326,14 @@ public class PlayerController : MonoBehaviour
             chargeTimer += Time.deltaTime;
             chargeTimer = Mathf.Clamp(chargeTimer, 0f, maxChargeTime);
 
+            // ✅ FIX: solo una vez (antes lo tenías duplicado)
             if (autoJumpAtMaxCharge && chargeTimer >= maxChargeTime)
+            {
+                if (jumpClip != null && sfxSource != null)
+                    sfxSource.PlayOneShot(jumpClip, jumpVolume);
+
                 JumpChargedRelease();
+            }
         }
 
         if (!hardFallDowned)
@@ -303,9 +345,6 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // =========================
-        // ⏸ PAUSA GLOBAL
-        // =========================
         if (PauseState.IsPaused)
             return;
 
@@ -463,11 +502,16 @@ public class PlayerController : MonoBehaviour
     void OnJumpCanceled(InputAction.CallbackContext ctx)
     {
         if (PauseState.IsPaused) return;
-
         if (!jumpHeld) return;
 
         if (isChargingJump && isGrounded)
+        {
+            // 🔊 SFX salto inmediato al soltar
+            if (jumpClip != null && sfxSource != null)
+                sfxSource.PlayOneShot(jumpClip, jumpVolume);
+
             JumpChargedRelease();
+        }
 
         jumpHeld = false;
     }
@@ -509,6 +553,12 @@ public class PlayerController : MonoBehaviour
         float newVx = -dirX * wallBounceSpeed;
         playerRb.linearVelocity = new Vector2(newVx, playerRb.linearVelocity.y);
 
+        if (wallHitClip != null && sfxSource != null && wallHitCooldownTimer <= 0f)
+        {
+            sfxSource.PlayOneShot(wallHitClip);
+            wallHitCooldownTimer = wallHitCooldown;
+        }
+
         wallBounceLocked = true;
         wallBounceTimer = wallBounceLockTime;
     }
@@ -535,6 +585,50 @@ public class PlayerController : MonoBehaviour
         anim.SetBool("IsCharging", isChargingJump && isGrounded);
         anim.SetFloat("YVelocity", playerRb.linearVelocity.y);
         anim.SetBool("IsFallingHard", hardFallDowned);
+    }
+
+    void HandleFootsteps()
+    {
+        if (PauseState.IsPaused)
+        {
+            footstepTimer = 0f;
+            wasWalking = false;
+            return;
+        }
+
+        if (sfxSource == null || footstepClip == null) return;
+
+        bool forceJumping = standUpJumpBuffer > 0f;
+
+        bool walking =
+            Mathf.Abs(moveInput.x) > 0.01f &&
+            (!footstepsOnlyGrounded || isGrounded) &&
+            !isChargingJump &&
+            !hardFallDowned &&
+            !forceJumping &&
+            !(enableTornado && insideTornado);
+
+        if (!walking)
+        {
+            footstepTimer = 0f;
+            wasWalking = false;
+            return;
+        }
+
+        if (!wasWalking)
+        {
+            sfxSource.PlayOneShot(footstepClip, footstepVolume);
+            footstepTimer = footstepInterval;
+            wasWalking = true;
+            return;
+        }
+
+        footstepTimer -= Time.deltaTime;
+        if (footstepTimer <= 0f)
+        {
+            sfxSource.PlayOneShot(footstepClip, footstepVolume);
+            footstepTimer = footstepInterval;
+        }
     }
 
     // =========================================================

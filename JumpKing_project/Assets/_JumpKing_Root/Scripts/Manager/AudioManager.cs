@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class AudioManager : MonoBehaviour
@@ -26,21 +26,20 @@ public class AudioManager : MonoBehaviour
     {
         if (instance == null)
         {
-            //Si no hay gameManager lo referenciamos y hacemos que perdure entre escenas
             instance = this;
-            
+            DontDestroyOnLoad(gameObject); // 🔥 CLAVE
         }
         else
         {
-            //Si ya hay GameManager, el duplicado se destruye.
             Destroy(gameObject);
         }
     }
 
+
     public void PlayMusic(int musicToPlay)
     { 
         musicSource.clip = musicLibrary[musicToPlay];
-        musicSource.Play(); //Reproducir la m�sica desde el principio
+        musicSource.Play(); //Reproducir la música desde el principio
     }
 
     public void PlaySFX(int sfxToPlay)
