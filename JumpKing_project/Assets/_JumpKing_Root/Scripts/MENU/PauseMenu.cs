@@ -63,6 +63,10 @@ public class PauseMenu : MonoBehaviour
 
         if (pauseRoot != null) pauseRoot.SetActive(true);
 
+        // ✅ Pausar música del nivel
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PauseMusic();
+
         Time.timeScale = 0f;
     }
 
@@ -74,7 +78,12 @@ public class PauseMenu : MonoBehaviour
         if (pauseRoot != null) pauseRoot.SetActive(false);
 
         Time.timeScale = 1f;
+
+        // ✅ Reanudar música del nivel
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.UnPauseMusic();
     }
+
 
     // =========================
     // MÉTODOS PARA BOTONES (USAR ESTOS EN ONCLICK)
@@ -104,6 +113,10 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 1f;
         PauseState.IsPaused = false;
         isPaused = false;
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.StopMusic();
+
 
         SceneManager.LoadScene(mainMenuScene);
     }
